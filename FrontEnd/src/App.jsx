@@ -34,7 +34,7 @@ export default function App({
             timeout: 10000,
           }
         );
-        console.log("Response", response.data);
+        console.log("Response is", response.data);
       } catch (error) {
         console.log("The error is: ", error);
       }
