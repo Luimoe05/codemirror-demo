@@ -17,13 +17,14 @@ export default function App({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState("");
+  const [result, setResult] = useState("");
 
   const handleSubmit = async () => {
     if (viewRef.current) {
       const currentCode = viewRef.current.state.doc.toString();
-
       const formattedCode = currentCode.replace(/\n/g, "\n");
 
+      setLoading(true);
       try {
         const response = await axios.post(
           "http://localhost:3000/api/run-code",
@@ -35,23 +36,24 @@ export default function App({
           }
         );
         console.log("Response is", response.data);
+        setResult(response.data);
+        if (response.data.stderr) {
+          setError(response.data.stderr);
+          setOutput("");
+        } else if (response.data.compile_output) {
+          setError(response.data.compile_output);
+          setOutput("");
+        } else {
+          // No errors, even if output is empty
+          setOutput(
+            response.data.stdout || "✅ Code ran successfully with no output."
+          );
+          setError("");
+        }
       } catch (error) {
         console.log("The error is: ", error);
       }
-
-      setLoading(true);
-      setError("");
-      setOutput("");
-
-      // Simulate API delay
-      setTimeout(() => {
-        if (currentCode.includes("error")) {
-          setError("Simulated runtime error");
-        } else {
-          setOutput(`Output:\n${currentCode}`);
-        }
-        setLoading(false);
-      }, 1000);
+      setLoading(false);
 
       if (onChange) {
         onChange(currentCode);
