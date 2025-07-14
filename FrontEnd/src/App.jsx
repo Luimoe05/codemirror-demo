@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 import { indentWithTab } from "@codemirror/commands";
 import { keymap, logException } from "@codemirror/view";
+import Output from "./Output/Output.jsx";
 import "./App.css";
 import axios from "axios";
 
@@ -13,6 +14,9 @@ export default function App({
 }) {
   const editorRef = useRef(null);
   const viewRef = useRef(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [output, setOutput] = useState("");
 
   const handleSubmit = async () => {
     if (viewRef.current) {
@@ -34,6 +38,20 @@ export default function App({
       } catch (error) {
         console.log("The error is: ", error);
       }
+
+      setLoading(true);
+      setError("");
+      setOutput("");
+
+      // Simulate API delay
+      setTimeout(() => {
+        if (currentCode.includes("error")) {
+          setError("Simulated runtime error");
+        } else {
+          setOutput(`Output:\n${currentCode}`);
+        }
+        setLoading(false);
+      }, 1000);
 
       if (onChange) {
         onChange(currentCode);
@@ -155,6 +173,7 @@ export default function App({
     <>
       <div ref={editorRef} className="code-editor" />
       <button onClick={handleSubmit}>Submit</button>
+      <Output output={output} error={error} loading={loading} />
     </>
   );
 }
