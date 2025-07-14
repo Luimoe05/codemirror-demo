@@ -25,7 +25,7 @@ exports.run = async (req, res) => {
       params: {
         base64_encoded: "false", // send raw code
         wait: "true", // wait for results in this request
-        fields: "*", // get everything back
+        fields: "stdout,stderr,status,message", // get everything back
       },
       headers: {
         "x-rapidapi-key": JUDGE_API_KEY,
