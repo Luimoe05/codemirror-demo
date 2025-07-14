@@ -16,7 +16,12 @@ export default function App({
   const handleSubmit = () => {
     if (viewRef.current) {
       const currentCode = viewRef.current.state.doc.toString();
+
+      const formattedCode = currentCode.replace(/\n/g, "\\n");
+
       console.log(currentCode);
+      console.log(formattedCode);
+
       if (onChange) {
         onChange(currentCode);
       }
