@@ -6,6 +6,7 @@ import { indentWithTab } from "@codemirror/commands";
 import { keymap, logException } from "@codemirror/view";
 import Output from "./Output/Output.jsx";
 import "./App.css";
+import axios from "axios";
 
 export default function App({
   initialCode = "print('Hello world')",
@@ -17,14 +18,26 @@ export default function App({
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (viewRef.current) {
       const currentCode = viewRef.current.state.doc.toString();
 
-      const formattedCode = currentCode.replace(/\n/g, "\\n");
+      const formattedCode = currentCode.replace(/\n/g, "\n");
 
-      console.log(currentCode);
-      console.log(formattedCode);
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/run-code",
+          {
+            source_code: formattedCode, // Changed from 'code' to 'source_code'
+            language_name: "python", // Changed from 'language' to 'language_name'
+            stdin: "", // Added stdin field
+            timeout: 10000,
+          }
+        );
+        console.log("Response is", response.data);
+      } catch (error) {
+        console.log("The error is: ", error);
+      }
 
       setLoading(true);
       setError("");
